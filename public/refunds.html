@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Reembolsos • SG Packs</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-badge">SG</div>
+      <div>
+        <div class="brand-title">SG Packs</div>
+        <div class="brand-sub">Packs digitales • Descarga por Drive</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a class="chip" href="index.html#packs">Packs</a>
+      <a class="chip active" href="refunds.html">Reembolsos</a>
+      <a class="chip" href="terms.html">Términos</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="hero-card">
+      <h1>Política de Reembolsos</h1>
+      <p>Como se trata de un producto digital, los reembolsos aplican en casos específicos.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Cuándo aplica</h2>
+    <ul>
+      <li>Si el enlace de entrega no funciona y no podemos solucionarlo.</li>
+      <li>Si recibiste un pack diferente al comprado y no se corrige.</li>
+      <li>Cargos duplicados por error (se devuelve el excedente).</li>
+    </ul>
+
+    <h2>Cuándo NO aplica</h2>
+    <ul>
+      <li>Si ya accediste/descargaste el contenido y no era lo que esperabas.</li>
+      <li>Si el problema es de compatibilidad con tu software y el pack lo indicaba.</li>
+      <li>Si compartiste el enlace o el contenido.</li>
+    </ul>
+
+    <h2>Cómo solicitarlo</h2>
+    <p>Escríbenos por WhatsApp con tu comprobante de pago y el correo usado en la compra.</p>
+
+    <p style="margin-top:18px">
+      <a class="btn btn-ghost" href="index.html">Volver al inicio</a>
+    </p>
+  </section>
+
+  <footer class="footer">
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <span>© <span id="year"></span> SG Packs</span>
+      <span>•</span>
+      <a href="terms.html">Términos</a>
+      <span>•</span>
+      <a href="privacy.html">Privacidad</a>
+    </div>
+  </footer>
+</main>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
