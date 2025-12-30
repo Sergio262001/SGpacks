@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SG Packs • Confirmación</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+</head>
+<body>
+  <main class="container" style="padding:26px 0">
+    <div class="hero-card">
+      <h1 style="margin:0 0 8px">Gracias 🙌</h1>
+      <p style="margin:0; color:var(--muted)">
+        Estamos verificando tu pago. Si fue aprobado, recibirás el link de Drive por correo.
+      </p>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+        <a class="btn btn-ghost" href="index.html">Volver a packs</a>
+        <a class="btn btn-primary" id="waLink2" href="#" target="_blank" rel="noopener">Soporte WhatsApp</a>
+      </div>
+
+      <div style="margin-top:14px; color:var(--muted); font-size:12px">
+        ID transacción: <span id="txid">—</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    document.getElementById("txid").textContent = params.get("id") || "—";
+    const base = "https://wa.me/573213116999";
+    const text = `Hola! Mi pago quedó en verificación. ID: ${params.get("id") || "N/A"}`;
+    document.getElementById("waLink2").href = `${base}?text=${encodeURIComponent(text)}`;
+  </script>
+</body>
+</html>

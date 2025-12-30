@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SG Packs</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-badge">SG</div>
+      <div>
+        <div class="brand-title">SG Packs</div>
+        <div class="brand-sub">Packs digitales • Descarga por Drive</div>
+      </div>
+    </a>
+
+    <nav class="nav">
+      <a class="chip active" href="#packs">Packs</a>
+      <a class="chip" id="waTop" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="hero-card">
+      <h1>Packs pro listos para usar</h1>
+      <p>Compra rápido, recibe tu entrega por Drive cuando el pago quede confirmado. Soporte directo por WhatsApp.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#packs">Ver packs</a>
+        <a class="btn btn-ghost" href="refunds.html">Reembolsos</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="packs">
+    <div class="section-title">
+      <h2>Catálogo</h2>
+      <span class="meta">9 packs • Escalable</span>
+    </div>
+
+    <div class="catalog-toolbar">
+      <input
+        id="searchInput"
+        class="search"
+        type="search"
+        placeholder="Buscar packs..."
+        autocomplete="off"
+      />
+      <div class="filters" id="filters"></div>
+    </div>
+
+    <div id="grid" class="grid-cards"></div>
+  </section>
+
+  <footer class="footer">
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <span>© <span id="year"></span> SG Packs</span>
+      <span>•</span>
+      <a href="terms.html">Términos</a>
+      <span>•</span>
+      <a href="privacy.html">Privacidad</a>
+      <span>•</span>
+      <a href="refunds.html">Reembolsos</a>
+    </div>
+  </footer>
+</main>
+
+<a class="wa-float" id="waLink" href="#" target="_blank" rel="noopener">
+  <span class="wa-dot"></span>
+  <span style="font-weight:800">WhatsApp</span>
+  <span style="color:var(--muted); font-size:12px">Soporte</span>
+</a>
+
+<!-- JS (orden correcto) -->
+<script src="assets/js/products.js"></script>
+<script src="assets/js/app.js"></script>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+  console.log("PRODUCTS:", window.SG_PRODUCTS); // ✅ debug, queda dentro del body
+</script>
+
+</body>
+</html>

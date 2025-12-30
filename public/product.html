@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SG Packs • Producto</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-badge">SG</div>
+      <div>
+        <div class="brand-title">SG Packs</div>
+        <div class="brand-sub">Producto</div>
+      </div>
+    </a>
+
+    <nav class="nav">
+      <a class="chip" href="index.html#packs">Volver</a>
+      <a class="chip" id="waTop" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Breadcrumb simple -->
+  <section style="padding:16px 0 0">
+    <div class="meta" style="gap:8px">
+      <a href="index.html#packs" style="opacity:.9; text-decoration:underline">Packs</a>
+      <span style="opacity:.6">›</span>
+      <span style="opacity:.8">Detalle</span>
+    </div>
+  </section>
+
+  <!-- Producto principal -->
+  <section class="hero" style="padding-top:14px">
+    <div id="product"></div>
+    <div id="productMore" style="margin-top:14px"></div>
+  </section>
+
+  <!-- Sección extra (opcional a futuro) -->
+  <section style="padding:0 0 26px">
+    <div class="section-title" style="margin-top:0">
+      <h2>¿Necesitas ayuda?</h2>
+      <span class="meta">Soporte rápido</span>
+    </div>
+
+    <div class="hero-card" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+      <div style="max-width:65ch">
+        <div style="font-weight:900; margin-bottom:6px">Escríbeme por WhatsApp</div>
+        <div style="color:var(--muted); font-size:13px">
+          Si tienes dudas de compatibilidad, instalación o entrega, te respondo por WhatsApp.
+        </div>
+      </div>
+
+      <a class="btn btn-primary" id="waHelp" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <a href="terms.html">Términos</a>
+      <span>•</span>
+      <a href="privacy.html">Privacidad</a>
+      <span>•</span>
+      <a href="refunds.html">Reembolsos</a>
+    </div>
+  </footer>
+
+</main>
+
+<a class="wa-float" id="waLink" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <span class="wa-dot"></span>
+  <span style="font-weight:800">WhatsApp</span>
+  <span style="color:var(--muted); font-size:12px">Dudas</span>
+</a>
+
+<!-- JS (orden correcto) -->
+<script src="assets/js/products.js"></script>
+<script src="assets/js/app.js"></script>
+
+<script>
+  // Enlaza los botones de WhatsApp del header y de la sección ayuda al mismo link flotante
+  document.addEventListener("DOMContentLoaded", () => {
+    const wa = document.getElementById("waLink")?.href || "#";
+
+    const top = document.getElementById("waTop");
+    if (top) top.href = wa;
+
+    const help = document.getElementById("waHelp");
+    if (help) help.href = wa;
+  });
+</script>
+
+</body>
+</html>
