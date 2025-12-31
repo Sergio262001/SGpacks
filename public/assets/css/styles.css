@@ -397,3 +397,71 @@ a{color:inherit;text-decoration:none}
    ========================================================= */
 .grid{ display:grid; gap:14px; }
 .card{ border: 1px solid var(--border); border-radius: var(--radius); }
+
+
+/* =========================================================
+   FIX: TARJETAS MISMA MEDIDA + GRATIS VERDE (NO TOCA HEADER)
+   Pegar al FINAL del styles.css
+   ========================================================= */
+
+/* 1) Grid estable */
+.grid-cards{
+  align-items: stretch; /* todas las cards estiran igual */
+}
+
+/* 2) Card misma altura */
+.pack-card{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 360px; /* ajusta si quieres más/menos */
+}
+
+/* 3) Imagen siempre igual */
+.pack-card img{
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+}
+
+/* 4) Body controla alturas internas */
+.pack-card-body{
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1; /* rellena el espacio */
+}
+
+/* 5) Título y descripción con límites (misma altura visual) */
+.pack-card-title{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.25em * 2); /* 2 líneas */
+}
+
+.pack-card-desc{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.35em * 2); /* 2 líneas */
+}
+
+/* 6) Footer de tarjeta siempre abajo */
+.pack-card-bottom{
+  margin-top: auto;
+}
+
+/* 7) GRATIS verde (pill) */
+.pack-price.free{
+  background: rgba(34,197,94,.12) !important;
+  border: 1px solid rgba(34,197,94,.28) !important;
+  color: #baf7d3 !important;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  white-space: nowrap;
+}

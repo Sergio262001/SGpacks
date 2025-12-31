@@ -13,17 +13,19 @@ function waUrl(text) {
 }
 
 /* =========================
-   WOMPI: 1 link + redirect por producto
+   WOMPI: link por producto + redirect
    ========================= */
 function wompiWithRedirect(p) {
-  // OJO: usa tu dominio final (web.app está bien)
+  // Si no hay link, devolvemos vacío (y caemos a WhatsApp)
+  if (!p || !p.wompiLink) return "";
+
   const redirect = `https://sgpackspdf.web.app/success.html?pid=${encodeURIComponent(
-    p.id
+    p.id || ""
   )}`;
 
-  // Un solo link en p.wompiLink (puede ser el mismo para todos)
-  // Nota: el parámetro puede variar según configuración; aquí usamos redirect-url como tú pediste.
-  return `${p.wompiLink}?redirect-url=${encodeURIComponent(redirect)}`;
+  // Mantiene tu lógica de redirect-url
+  const sep = p.wompiLink.includes("?") ? "&" : "?";
+  return `${p.wompiLink}${sep}redirect-url=${encodeURIComponent(redirect)}`;
 }
 
 /* =========================
@@ -40,10 +42,11 @@ const state = {
    ========================= */
 function setWhatsAppGlobal() {
   const a = qs("#waLink");
-  if (a) a.href = waUrl("Hola! Tengo una duda sobre SG Packs");
+  const link = waUrl("Hola! Tengo una duda sobre SG Packs");
+  if (a) a.href = link;
 
   const top = qs("#waTop");
-  if (top && a) top.href = a.href;
+  if (top) top.href = link;
 }
 
 /* =========================
@@ -51,7 +54,8 @@ function setWhatsAppGlobal() {
    ========================= */
 function getCategories() {
   const cats = new Set(PRODUCTS.map((p) => p.category).filter(Boolean));
-  return ["Todos", ...Array.from(cats)];
+  const arr = Array.from(cats);
+  return arr.length ? ["Todos", ...arr] : ["Todos"];
 }
 
 function renderFilters() {
@@ -60,6 +64,7 @@ function renderFilters() {
 
   const cats = getCategories();
 
+  // Si no hay categorías reales, mostramos solo "Todos" + "Gratis"
   el.innerHTML = `
     ${cats
       .map(
@@ -96,6 +101,8 @@ function filteredProducts() {
 
   return PRODUCTS.filter((p) => {
     if (state.onlyFree && !p.isFree) return false;
+
+    // si category está en "Todos" no filtramos
     if (state.category !== "Todos" && p.category !== state.category) return false;
 
     if (!q) return true;
@@ -114,6 +121,28 @@ function filteredProducts() {
 
     return haystack.includes(q);
   });
+}
+
+/* =========================
+   Helpers de compra
+   ========================= */
+function getBuyHref(p) {
+  if (!p) return waUrl("Hola! Tengo una duda sobre SG Packs");
+
+  if (p.isFree) {
+    return waUrl(`Hola! Quiero el pack GRATIS: ${p.title}. ¿Cómo lo obtengo?`);
+  }
+
+  const wompi = wompiWithRedirect(p);
+  if (wompi) return wompi;
+
+  // fallback si falta wompiLink
+  return waUrl(`Hola! Quiero comprar: ${p.title}. ¿Cómo procedo?`);
+}
+
+function getBuyLabel(p) {
+  // Tú pediste que diga “Comprar” en todo lado
+  return "Comprar";
 }
 
 /* =========================
@@ -137,12 +166,8 @@ function renderGrid() {
 
   grid.innerHTML = list
     .map((p) => {
-      const buyHref =
-        p.isFree || !p.wompiLink
-          ? waUrl(`Hola! Estoy interesado en: ${p.title}. ¿Cómo lo obtengo?`)
-          : wompiWithRedirect(p);
-
-      const buyLabel = p.isFree ? "Pedir acceso" : "Pagar con Wompi";
+      const buyHref = getBuyHref(p);
+      const buyLabel = getBuyLabel(p);
 
       return `
         <article class="pack-card">
@@ -167,7 +192,10 @@ function renderGrid() {
               }
 
               <div style="display:flex; gap:8px">
-                <a class="btn btn-ghost btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">Ver detalles</a>
+                <a class="btn btn-ghost btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">
+                  Ver detalles
+                </a>
+
                 <a class="btn btn-primary btn-sm" href="${buyHref}" target="_blank" rel="noopener">
                   ${buyLabel}
                 </a>
@@ -207,17 +235,18 @@ function renderProduct() {
 
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
-  const p = PRODUCTS.find((x) => x.id === id) || PRODUCTS[0];
+  const p = PRODUCTS.find((x) => x.id === id);
+
+  if (!p) {
+    el.innerHTML = `<div class="hero-card">Producto no encontrado.</div>`;
+    return;
+  }
 
   const wa = qs("#waLink");
   if (wa) wa.href = waUrl(`Hola! Tengo una duda sobre el pack: ${p.title}`);
 
-  const buyHref =
-    p.isFree || !p.wompiLink
-      ? waUrl(`Hola! Estoy interesado en: ${p.title}. ¿Cómo lo obtengo?`)
-      : wompiWithRedirect(p);
-
-  const buyLabel = p.isFree ? "Pedir acceso" : "Pagar con Wompi";
+  const buyHref = getBuyHref(p);
+  const buyLabel = "Comprar";
 
   el.innerHTML = `
     <div class="hero-card">
@@ -238,7 +267,7 @@ function renderProduct() {
               <div style="color:var(--muted); font-size:12px">Precio</div>
               ${
                 p.isFree
-                  ? `<div style="font-size:22px; font-weight:900; color:#baf7d3">GRATIS</div>`
+                  ? `<div class="pack-price free" style="display:inline-flex">GRATIS</div>`
                   : `<div style="font-size:22px; font-weight:900">${formatCOP(p.priceCOP)}</div>`
               }
             </div>
