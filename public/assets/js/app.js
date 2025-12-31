@@ -1,13 +1,29 @@
-// assets/js/app.js
-const PRODUCTS = window.SG_PRODUCTS || [];
+// public/assets/js/app.js
+const PRODUCTS = Array.isArray(window.SG_PRODUCTS) ? window.SG_PRODUCTS : [];
 
 const formatCOP = (n) =>
-  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP" }).format(n);
+  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP" }).format(
+    Number(n || 0)
+  );
 
 const qs = (s) => document.querySelector(s);
 
 function waUrl(text) {
   return `https://wa.me/573213116999?text=${encodeURIComponent(text)}`;
+}
+
+/* =========================
+   WOMPI: 1 link + redirect por producto
+   ========================= */
+function wompiWithRedirect(p) {
+  // OJO: usa tu dominio final (web.app está bien)
+  const redirect = `https://sgpackspdf.web.app/success.html?pid=${encodeURIComponent(
+    p.id
+  )}`;
+
+  // Un solo link en p.wompiLink (puede ser el mismo para todos)
+  // Nota: el parámetro puede variar según configuración; aquí usamos redirect-url como tú pediste.
+  return `${p.wompiLink}?redirect-url=${encodeURIComponent(redirect)}`;
 }
 
 /* =========================
@@ -60,7 +76,6 @@ function renderFilters() {
     </button>
   `;
 
-  // evitar duplicar listeners si renderizas de nuevo:
   el.onclick = (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -102,7 +117,7 @@ function filteredProducts() {
 }
 
 /* =========================
-   Grid (3-4 por fila PC)
+   Grid (index)
    ========================= */
 function renderGrid() {
   const grid = qs("#grid");
@@ -121,42 +136,47 @@ function renderGrid() {
   }
 
   grid.innerHTML = list
-    .map(
-      (p) => `
-    <article class="pack-card">
-      <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="Ver detalles de ${p.title}">
-        <img src="${p.cover}" alt="${p.title}" onerror="this.src='https://picsum.photos/900/600?random=7'">
-      </a>
+    .map((p) => {
+      const buyHref =
+        p.isFree || !p.wompiLink
+          ? waUrl(`Hola! Estoy interesado en: ${p.title}. ¿Cómo lo obtengo?`)
+          : wompiWithRedirect(p);
 
-      <div class="pack-card-body">
-        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
-          <div class="meta"><span>${p.category}</span></div>
-          ${p.badge ? `<span class="badge">${p.badge}</span>` : ``}
-        </div>
+      const buyLabel = p.isFree ? "Pedir acceso" : "Pagar con Wompi";
 
-        <h3 class="pack-card-title">${p.title}</h3>
-        <p class="pack-card-desc">${p.shortDesc || "Pack digital listo para usar. Entrega por Drive."}</p>
+      return `
+        <article class="pack-card">
+          <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="Ver detalles de ${p.title}">
+            <img src="${p.cover}" alt="${p.title}">
+          </a>
 
-        <div class="pack-card-bottom">
-          ${
-            p.isFree
-              ? `<span class="pack-price free">GRATIS</span>`
-              : `<span class="pack-price">${formatCOP(p.priceCOP || 0)}</span>`
-          }
+          <div class="pack-card-body">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
+              <div class="meta"><span>${p.category || "Pack"}</span></div>
+              ${p.badge ? `<span class="badge">${p.badge}</span>` : ``}
+            </div>
 
-          <div style="display:flex; gap:8px">
-            <a class="btn btn-ghost btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">Ver detalles</a>
-            <a class="btn btn-primary btn-sm" href="${waUrl(
-              `Hola! Estoy interesado en: ${p.title}. ¿Cómo lo compro?`
-            )}" target="_blank" rel="noopener">
-              Comprar
-            </a>
+            <h3 class="pack-card-title">${p.title}</h3>
+            <p class="pack-card-desc">${p.shortDesc || "Pack digital listo para usar. Entrega por Drive."}</p>
+
+            <div class="pack-card-bottom">
+              ${
+                p.isFree
+                  ? `<span class="pack-price free">GRATIS</span>`
+                  : `<span class="pack-price">${formatCOP(p.priceCOP)}</span>`
+              }
+
+              <div style="display:flex; gap:8px">
+                <a class="btn btn-ghost btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">Ver detalles</a>
+                <a class="btn btn-primary btn-sm" href="${buyHref}" target="_blank" rel="noopener">
+                  ${buyLabel}
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </article>
-  `
-    )
+        </article>
+      `;
+    })
     .join("");
 }
 
@@ -174,7 +194,7 @@ function initSearch() {
 }
 
 /* =========================
-   Página de producto
+   Página de producto (product.html)
    ========================= */
 function renderProduct() {
   const el = qs("#product");
@@ -189,9 +209,15 @@ function renderProduct() {
   const id = params.get("id");
   const p = PRODUCTS.find((x) => x.id === id) || PRODUCTS[0];
 
-  // WhatsApp con nombre del pack
   const wa = qs("#waLink");
   if (wa) wa.href = waUrl(`Hola! Tengo una duda sobre el pack: ${p.title}`);
+
+  const buyHref =
+    p.isFree || !p.wompiLink
+      ? waUrl(`Hola! Estoy interesado en: ${p.title}. ¿Cómo lo obtengo?`)
+      : wompiWithRedirect(p);
+
+  const buyLabel = p.isFree ? "Pedir acceso" : "Pagar con Wompi";
 
   el.innerHTML = `
     <div class="hero-card">
@@ -200,7 +226,7 @@ function renderProduct() {
 
         <div>
           <div class="meta" style="margin-bottom:8px">
-            <span>${p.category}</span>
+            <span>${p.category || "Pack"}</span>
             ${p.badge ? `<span class="badge" style="margin-left:10px">${p.badge}</span>` : ""}
           </div>
 
@@ -213,15 +239,13 @@ function renderProduct() {
               ${
                 p.isFree
                   ? `<div style="font-size:22px; font-weight:900; color:#baf7d3">GRATIS</div>`
-                  : `<div style="font-size:22px; font-weight:900">${formatCOP(p.priceCOP || 0)}</div>`
+                  : `<div style="font-size:22px; font-weight:900">${formatCOP(p.priceCOP)}</div>`
               }
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap">
-              <a class="btn btn-primary" href="${waUrl(
-                `Hola! Quiero comprar: ${p.title}. ¿Cómo procedo?`
-              )}" target="_blank" rel="noopener">
-                ${p.isFree ? "Pedir acceso" : "Comprar"}
+              <a class="btn btn-primary" href="${buyHref}" target="_blank" rel="noopener">
+                ${buyLabel}
               </a>
               <a class="btn btn-ghost" href="index.html#packs">Volver</a>
             </div>
@@ -239,7 +263,7 @@ function renderProduct() {
       <h2 style="margin:0 0 10px; font-size:16px; color:var(--muted); font-weight:800">Detalles</h2>
 
       <p style="margin:0 0 14px; color:var(--text); opacity:.95; line-height:1.6">
-        ${p.longDesc || "Descripción completa del pack. Agrega aquí el contenido, beneficios, usos recomendados y notas."}
+        ${p.longDesc || "Descripción completa del pack."}
       </p>
 
       <div style="display:grid; gap:14px; grid-template-columns: 1fr 1fr">
@@ -257,37 +281,19 @@ function renderProduct() {
           </ul>
         </div>
       </div>
-
-      ${
-        p.gallery && p.gallery.length
-          ? `<div style="margin-top:14px">
-              <div style="color:var(--muted); font-size:12px; margin-bottom:8px">Previews</div>
-              <div style="display:grid; gap:10px; grid-template-columns: repeat(3, minmax(0,1fr))">
-                ${p.gallery
-                  .slice(0, 6)
-                  .map(
-                    (src) => `
-                  <img src="${src}" alt="Preview" style="width:100%; border-radius:14px; border:1px solid var(--border); aspect-ratio:16/10; object-fit:cover; background:rgba(255,255,255,.03)">
-                `
-                  )
-                  .join("")}
-              </div>
-            </div>`
-          : ``
-      }
     </div>
   `;
 }
 
 /* =========================
-   INIT (esto es "init")
+   INIT
    ========================= */
 function init() {
   setWhatsAppGlobal();
   renderFilters();
   initSearch();
   renderGrid();
-  renderProduct(); // solo hace algo en product.html
+  renderProduct();
   console.log("SG_PRODUCTS loaded:", PRODUCTS);
 }
 
